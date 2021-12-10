@@ -1,5 +1,7 @@
 import Head from "next/head";
 import Layout from "../components/Layout";
+import fs from 'fs';
+import path from "path";
 
 export default function blog() {
     return(
@@ -23,5 +25,28 @@ export default function blog() {
                 </div>
       
         </Layout>
-    )
+    );
+}
+
+export const getStaticPaths = async()=>{
+    const files = fs.readdirSync("posts");
+    console.log("Files", files)
+    const paths = files.map(filename => ({
+        params: {
+            slug: filename.replace('.md', '')
+        }
+    }));
+    console.log('paths:', paths)
+    return{
+        paths,
+        fallback:false
+    }
+};
+
+export  const getStaticProps = async ({params: {slug}}) =>{
+    return{
+        props:{
+            slug
+        }
+    }
 }
