@@ -1,5 +1,10 @@
 import Head from 'next/head'
 import Layout from '../components/Layout'
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
+import moment from 'moment';
+import { marked } from 'marked';
 
 
 export default function Home() {
@@ -36,51 +41,7 @@ export default function Home() {
                 <p>Ipsum dolor sit amet</p>
               </header>
             </article>
-            <article>
-              <span className="image">
-                <img src="images/pic02.jpg" alt="" />
-              </span>
-              <header className="major">
-                <h3><a href="landing.html" className="link">Tempus</a></h3>
-                <p>feugiat amet tempus</p>
-              </header>
-            </article>
-            <article>
-              <span className="image">
-                <img src="images/pic03.jpg" alt="" />
-              </span>
-              <header className="major">
-                <h3><a href="landing.html" className="link">Magna</a></h3>
-                <p>Lorem etiam nullam</p>
-              </header>
-            </article>
-            <article>
-              <span className="image">
-                <img src="images/pic04.jpg" alt="" />
-              </span>
-              <header className="major">
-                <h3><a href="landing.html" className="link">Ipsum</a></h3>
-                <p>Nisl sed aliquam</p>
-              </header>
-            </article>
-            <article>
-              <span className="image">
-                <img src="images/pic05.jpg" alt="" />
-              </span>
-              <header className="major">
-                <h3><a href="landing.html" className="link">Consequat</a></h3>
-                <p>Ipsum dolor sit amet</p>
-              </header>
-            </article>
-            <article>
-              <span className="image">
-                <img src="images/pic06.jpg" alt="" />
-              </span>
-              <header className="major">
-                <h3><a href="landing.html" className="link">Etiam</a></h3>
-                <p>Feugiat amet tempus</p>
-              </header>
-            </article>
+           
           </section>
           {/* Two */}
           <section id="two">
@@ -98,4 +59,30 @@ export default function Home() {
        
       </Layout>
   )
+}
+
+export  const getStaticProps = async () =>{
+  const sortPosts =()=>{
+    const allPosts = fs.readFileSync("posts").map((filename) =>{
+      const file = fs.readFileSync(path.join("posts",filename)).toString();
+      const postData = matter(file);
+      return{
+        content:postData.content,
+        title:postData.data.title,
+        featured_image: postData.data.featured_image,
+        data: postData.data.date,
+      };
+
+    });
+
+    return allPosts.sort((a,b) => new moment(a.data).format('YYYY-MM-DD HH:mm:ss') < new moment(b.date).format('YYYY-MM-DD HH:mm:ss'))
+  }
+  
+  console.log(sortPosts())
+  return{
+      props:{
+          slug:test
+    
+      }
+  }
 }

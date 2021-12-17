@@ -2,8 +2,8 @@ import Head from "next/head";
 import Layout from "../components/Layout";
 import fs from 'fs';
 import path from "path";
-import matter from 'gray-matter'
-import {marked} from 'marked'
+import matter from 'gray-matter';
+import {marked} from 'marked';
 
 export default function PostPage({postData, content}) {
     return(
