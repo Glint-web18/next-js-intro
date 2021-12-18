@@ -4,10 +4,11 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import moment from 'moment';
-import { marked } from 'marked';
+import Link from "next/link";
 
 
-export default function Home() {
+
+export default function Home({posts}) {
   return (
       <Layout>
         <Head>
@@ -32,15 +33,21 @@ export default function Home() {
         <div id="main">
           {/* One */}
           <section id="one" className="tiles">
-            <article>
+            {/* Loop over posts */}
+            {posts.map((post) => (
+              <article>
               <span className="image">
-                <img src="images/pic01.jpg" alt="" />
+                <img src={`/assets/images/${post.featured_image}`} alt="" />
               </span>
               <header className="major">
-                <h3><a href="landing.html" className="link">Aliquam</a></h3>
-                <p>Ipsum dolor sit amet</p>
+                <h3>
+                  <Link href={`/${post.slug}`} className="link">{post.title}</Link>
+                  </h3>
+                {/* <p>Ipsum dolor sit amet</p> */}
               </header>
             </article>
+            ))}
+            
            
           </section>
           {/* Two */}
@@ -63,25 +70,26 @@ export default function Home() {
 
 export  const getStaticProps = async () =>{
   const sortPosts =()=>{
-    const allPosts = fs.readFileSync("posts").map((filename) =>{
+    const allPosts = fs.readdirSync("posts").map((filename) =>{
       const file = fs.readFileSync(path.join("posts",filename)).toString();
       const postData = matter(file);
       return{
         content:postData.content,
         title:postData.data.title,
         featured_image: postData.data.featured_image,
-        data: postData.data.date,
+        date: postData.data.date,
+        slug:postData.data.slug,
       };
 
     });
 
-    return allPosts.sort((a,b) => new moment(a.data).format('YYYY-MM-DD HH:mm:ss') < new moment(b.date).format('YYYY-MM-DD HH:mm:ss'))
+    return allPosts.sort((a,b) => new moment(a.data).format('YYYY-MM-DD HH:mm:ss') - new moment(b.date).format('YYYY-MM-DD HH:mm:ss'))
   }
   
-  console.log(sortPosts())
+  
   return{
       props:{
-          slug:test
+          posts:sortPosts(),
     
       }
   }
